@@ -1,0 +1,48 @@
+version: '3.9'
+services:
+
+  api:
+    build: 
+     context: ./api
+    container_name: api-backend-invoices-test
+    volumes: 
+      - ./api/src:/usr/app/src
+    restart: always
+    ports:
+      - 8001:8001
+    depends_on:
+      - postgres
+    networks:
+      - my_network
+    command: /bin/sh -c "cd /usr/app && npm run dev"
+  postgres:
+    image: postgres
+    container_name: my_postgres_fatures_invoice
+    environment:
+      POSTGRES_USER: myuser      
+      POSTGRES_PASSWORD: mypassword123  
+      POSTGRES_DB: mydatabase_invoice    
+    restart: always
+    ports:
+      - "5432:5432"              
+    volumes:
+      - postgres_data:/var/lib/postgresql/data:rw
+    networks:
+      - my_network
+
+  web:
+    build:
+      context: ./web
+    stdin_open: true
+    volumes:
+    - .:/app/project
+    - .:/app/node_modules
+    ports:
+      - 3000:3000
+
+volumes:
+  postgres_data:                 
+
+networks:
+  my_network:
+    driver: bridge               
